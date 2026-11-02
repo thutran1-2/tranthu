@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今天吃什麼？ - 美食隨機抽籤機</title>
+  
+  <style>
+    /* 基礎重設與可愛活潑黃橘色風格設定 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Comic Sans MS', 'Chalkboard SE', '微軟正黑體', sans-serif;
+      background-color: #fff9e6; /* 溫暖淺黃色背景 */
+      background-image: radial-gradient(#ffe082 12%, transparent 12%);
+      background-size: 24px 24px; /* 可愛圓點點背景 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* 主卡片容器 */
+    .card {
+      background-color: #ffffff;
+      border: 4px solid #ffb74d;
+      border-radius: 28px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 12px 30px rgba(255, 152, 0, 0.25);
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    /* 標題設定 */
+    .title {
+      color: #ff6f00;
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      min-height: 3.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 彈跳效果動畫 */
+    .bounce-animation {
+      animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.15); }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 食物圖片容器 */
+    .image-container {
+      width: 100%;
+      height: 220px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 3px dashed #ffa726;
+      margin-bottom: 1.5rem;
+      background-color: #fff3e0;
+    }
+
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .image-container img:hover {
+      transform: scale(1.05);
+    }
+
+    /* 按鈕群組 */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    /* 抽籤大按鈕 (鮮豔橘黃色) */
+    .btn-draw {
+      background-color: #ff9800;
+      color: #ffffff;
+      box-shadow: 0 6px 0 #e65100;
+    }
+
+    .btn-draw:hover {
+      background-color: #ffa726;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 #e65100;
+    }
+
+    .btn-draw:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #e65100;
+    }
+
+    /* 地圖按鈕 (綠色系) */
+    .btn-map {
+      background-color: #4caf50;
+      color: #ffffff;
+      box-shadow: 0 5px 0 #2e7d32;
+    }
+
+    .btn-map:hover {
+      background-color: #66bb6a;
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 #2e7d32;
+    }
+
+    .btn-map:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #2e7d32;
+    }
+
+    /* 隱藏樣式 */
+    .hidden {
+      display: none;
+    }
+  </style>
+
+  <script>
+    // 確保 DOM 載入完全後才執行腳本
+    document.addEventListener('DOMContentLoaded', () => {
+      // 設定基本搜尋地址
+      const baseAddress = '811高雄市楠梓區仁昌里德民路640號';
+
+      // 1. 設定美食資料庫（名稱、照片網址、搭配地址的 Google Maps 搜尋連結）
+      const foods = [
+        {
+          name: '🍜 麵線',
+          image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80',
+          mapUrl: `https://www.google.com/maps/search/${encodeURIComponent(baseAddress + ' 麵線')}`
+        },
+        {
+          name: '🧈 臭豆腐',
+          image: 'https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=600&q=80',
+          mapUrl: `https://www.google.com/maps/search/${encodeURIComponent(baseAddress + ' 臭豆腐')}`
+        },
+        {
+          name: '🍗 鹹酥雞',
+          image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80',
+          mapUrl: `https://www.google.com/maps/search/${encodeURIComponent(baseAddress + ' 鹹酥雞')}`
+        },
+        {
+          name: '🍲 火鍋',
+          image: 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=600&q=80',
+          mapUrl: `https://www.google.com/maps/search/${encodeURIComponent(baseAddress + ' 火鍋')}`
+        },
+        {
+          name: '🏪 便利商店',
+          image: 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=600&q=80',
+          mapUrl: `https://www.google.com/maps/search/${encodeURIComponent(baseAddress + ' 便利商店')}`
+        }
+      ];
+
+      // 2. 取得 DOM 元素
+      const foodTitle = document.getElementById('food-title');
+      const foodImage = document.getElementById('food-image');
+      const drawBtn = document.getElementById('draw-btn');
+      const mapBtn = document.getElementById('map-btn');
+
+      // 3. 綁定抽籤按鈕點擊事件
+      drawBtn.addEventListener('click', () => {
+        // 隨機選取一個項目
+        const randomIndex = Math.floor(Math.random() * foods.length);
+        const selectedFood = foods[randomIndex];
+
+        // 移除動畫 class，確保每次點擊能重複觸發動畫
+        foodTitle.classList.remove('bounce-animation');
+        
+        // 強制瀏覽器重繪 (Reflow) 以重置動畫
+        void foodTitle.offsetWidth;
+
+        // 更新畫面內容
+        foodTitle.textContent = selectedFood.name;
+        foodImage.src = selectedFood.image;
+        foodImage.alt = selectedFood.name;
+
+        // 加上彈跳動畫 Class
+        foodTitle.classList.add('bounce-animation');
+
+        // 設定 Google Maps 連結並顯示馬上出發按鈕
+        mapBtn.href = selectedFood.mapUrl;
+        mapBtn.classList.remove('hidden');
+      });
+    });
+  </script>
+</head>
+<body>
+
+  <main class="card">
+    <!-- 標題區域 -->
+    <h1 id="food-title" class="title">今天吃什麼？</h1>
+
+    <!-- 食物圖片展示區 -->
+    <div class="image-container">
+      <img id="food-image" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="美食預覽">
+    </div>
+
+    <!-- 按鈕區域 -->
+    <div class="button-group">
+      <button id="draw-btn" class="btn btn-draw">🎲 點我抽籤</button>
+      <a id="map-btn" class="btn btn-map hidden" href="#" target="_blank" rel="noopener noreferrer">📍 馬上出發 (Google Maps)</a>
+    </div>
+  </main>
+
+</body>
+</html>
